@@ -1,4 +1,3 @@
-# User CRUD
 from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,7 +28,6 @@ async def update_user(db: AsyncSession, user: UserUpdate, user_id: int):
     return db_user
 
 
-# Get Wallet Balance
 async def get_wallet_balance(db: AsyncSession, user_id: int):
     result = await db.execute(select(User).filter(User.id == user_id))
     user = result.scalars().first()
@@ -42,7 +40,6 @@ async def get_wallet_balance(db: AsyncSession, user_id: int):
     return None
 
 
-# Add Money in Wallet
 async def add_money_in_wallet(db: AsyncSession, user_id: int, amount: int):
     user = await get_user(db, user_id)
     if user:
@@ -58,7 +55,6 @@ async def add_money_in_wallet(db: AsyncSession, user_id: int, amount: int):
     return None
 
 
-# Subtract Money from Wallet
 async def subtract_money_from_wallet(db: AsyncSession, user_id: int, amount: int):
     user = await get_user(db, user_id)
     if user:

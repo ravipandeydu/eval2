@@ -13,7 +13,6 @@ async def create_transaction(db: AsyncSession, transaction: TransactionCreate):
     return db_transaction
 
 
-# get all transactions of a user with pagination with page limit 10
 async def get_all_transactions_of_a_user(
     db: AsyncSession, user_id: int, page: int = 1, page_limit: int = 10
 ):

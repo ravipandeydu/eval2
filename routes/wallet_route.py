@@ -1,4 +1,3 @@
-# User Routes
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 import cruds.user_crud as crud

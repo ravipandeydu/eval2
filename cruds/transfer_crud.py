@@ -15,46 +15,38 @@ async def transfer_money(
     amount: int,
     description: str = None,
 ):
-    # Check if sender has sufficient balance
     query = select(User).filter(User.id == sender_user_id)
     result = await db.execute(query)
     sender = result.scalars().first()
     if sender.balance < amount:
         raise HTTPException(status_code=400, detail="Insufficient balance")
-    # Check if recipient exists
+
     query = select(User).filter(User.id == recipient_user_id)
     result = await db.execute(query)
     recipient = result.scalars().first()
     if not recipient:
         raise HTTPException(status_code=400, detail="Recipient not found")
 
-    # Create recipient transaction
     recipient_transaction = TransactionCreate(
         user_id=sender_user_id,
         transaction_type="debit",
         amount=amount,
         description=description,
-        # reference_transaction_id=transaction.id,
-        # recipient_user_id=sender_user_id,
     )
     recipient_transaction = await transaction_crud.create_transaction(
         db, recipient_transaction
     )
 
-    # Create sender transaction
     sender_transaction = TransactionCreate(
         user_id=recipient_user_id,
         transaction_type="credit",
         amount=amount,
         description=description,
-        # reference_transaction_id=transaction.id,
-        # recipient_user_id=sender_user_id,
     )
     sender_transaction = await transaction_crud.create_transaction(
         db, sender_transaction
     )
 
-    # Update sender and recipient balances
     sender.balance -= amount
     recipient.balance += amount
     await db.commit()

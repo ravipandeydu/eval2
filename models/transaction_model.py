@@ -12,14 +12,6 @@ class Transaction(Base):
     transaction_type = Column(String(20), nullable=False)
     amount = Column(Integer, nullable=False)
     description = Column(String(255))
-    # reference_transaction_id = Column(Integer, ForeignKey("transactions.id"))
-    # recipient_user_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="transactions")
-    # reference_transaction = relationship(
-    #     "Transaction", back_populates="transactions", remote_side=[id]
-    # )
-    # recipient_user = relationship(
-    #     "User", back_populates="transactions", foreign_keys=[recipient_user_id]
-    # )

@@ -1,4 +1,3 @@
-# User Schema
 from optparse import OptionParser
 from typing import Optional
 from pydantic import BaseModel

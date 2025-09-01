@@ -1,4 +1,3 @@
-# Transfer Route
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 import cruds.transfer_crud as crud
@@ -24,3 +23,11 @@ async def create_transfer(
     return await crud.transfer_money(
         db, sender_user_id, recipient_user_id, amount, description
     )
+
+
+@transfer_router.get("/{transaction_id}")
+async def get_transfer(
+    transaction_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    return await crud.get_transfer_by_id(db, transaction_id)
