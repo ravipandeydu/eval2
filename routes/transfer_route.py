@@ -1,33 +1,51 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-import cruds.transfer_crud as crud
-from models.transaction_model import Transaction
-from schemas.transaction_schema import TransactionCreate, TransactionUpdate
-from datetime import datetime
+from cruds import transfer_crud
 from db.database import get_db
-
-transfer_router = APIRouter(
-    prefix="/transfer",
-    tags=["transfer"],
+from schemas.transfer_schema import (
+    TransferRequest,
+    TransferResponse,
+    TransferDetailResponse,
+    InsufficientBalanceError
 )
 
+router = APIRouter()
 
-@transfer_router.post("/")
+
+@router.post("/transfer/", response_model=TransferResponse)
 async def create_transfer(
-    sender_user_id: int,
-    recipient_user_id: int,
-    amount: int,
-    description: str,
+    transfer_request: TransferRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    return await crud.transfer_money(
-        db, sender_user_id, recipient_user_id, amount, description
-    )
+    """Transfer money between users"""
+    try:
+        result = await transfer_crud.transfer_money(
+            db=db,
+            sender_user_id=transfer_request.sender_user_id,
+            recipient_user_id=transfer_request.recipient_user_id,
+            amount=transfer_request.amount,
+            description=transfer_request.description
+        )
+        return TransferResponse(**result)
+    except HTTPException as e:
+        if e.status_code == 400 and isinstance(e.detail, dict) and "error" in e.detail:
+            # Handle insufficient balance error
+            raise HTTPException(
+                status_code=400,
+                detail=InsufficientBalanceError(
+                    error=e.detail["error"],
+                    current_balance=e.detail["current_balance"],
+                    required_amount=e.detail["required_amount"]
+                ).dict()
+            )
+        raise e
 
 
-@transfer_router.get("/{transaction_id}")
+@router.get("/transfer/{transfer_id}", response_model=TransferDetailResponse)
 async def get_transfer(
-    transaction_id: int,
+    transfer_id: str,
     db: AsyncSession = Depends(get_db),
 ):
-    return await crud.get_transfer_by_id(db, transaction_id)
+    """Get transfer details by transfer ID"""
+    transfer = await transfer_crud.get_transfer_by_id(db, transfer_id)
+    return TransferDetailResponse(**transfer)
