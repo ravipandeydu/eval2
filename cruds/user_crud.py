@@ -34,7 +34,11 @@ async def get_wallet_balance(db: AsyncSession, user_id: int):
     result = await db.execute(select(User).filter(User.id == user_id))
     user = result.scalars().first()
     if user:
-        return user.balance
+        return {
+            "user_id": user.id,
+            "balance": user.balance,
+            "last_updated": user.updated_at,
+        }
     return None
 
 

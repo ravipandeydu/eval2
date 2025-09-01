@@ -1,6 +1,8 @@
 # User Model
 from datetime import datetime
 from sqlalchemy import TIMESTAMP, Column, Integer, String
+from sqlalchemy.orm import relationship
+
 from db.database import Base
 
 
@@ -15,3 +17,5 @@ class User(Base):
     balance = Column(Integer, default=0)
     created_at = Column(TIMESTAMP, default=datetime.now())
     updated_at = Column(TIMESTAMP, default=datetime.now(), onupdate=datetime.now)
+
+    transactions = relationship("Transaction", back_populates="user")

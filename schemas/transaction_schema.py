@@ -9,8 +9,8 @@ class TransactionBase(BaseModel):
     transaction_type: str
     amount: int
     description: str = None
-    reference_transaction_id: int = None
-    recipient_user_id: int = None
+    # reference_transaction_id: int = None
+    # recipient_user_id: int = None
 
 
 class TransactionCreate(TransactionBase):
@@ -22,8 +22,8 @@ class TransactionUpdate(BaseModel):
     transaction_type: Optional[str] = None
     amount: Optional[int] = None
     description: Optional[str] = None
-    reference_transaction_id: Optional[int] = None
-    recipient_user_id: Optional[int] = None
+    # reference_transaction_id: Optional[int] = None
+    # recipient_user_id: Optional[int] = None
 
 
 class Transaction(TransactionBase):
@@ -31,4 +31,4 @@ class Transaction(TransactionBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True

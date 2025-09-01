@@ -4,6 +4,7 @@ import uvicorn
 from db.database import init_db
 from routes.user_route import user_router
 from routes.wallet_route import wallet_router
+from routes.transfer_route import transfer_router
 
 
 @asynccontextmanager
@@ -22,6 +23,7 @@ def read_root():
 
 app.include_router(user_router)
 app.include_router(wallet_router)
+app.include_router(transfer_router)
 
 
 if __name__ == "__main__":
